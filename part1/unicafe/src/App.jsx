@@ -21,19 +21,23 @@ const Statistict = ({ good, neutral, bad }) => {
 
   const positive = () => {
     if (all === 0) return 0;
-    const pos = ((good + neutral) / all).toFixed(2);
+    const pos = ((good / all) * 100).toFixed(2) + " %";
     return pos;
   };
   if (all === 0) return <p>No feedback!</p>;
   return (
     <div>
       <h1>Statistics</h1>
-      <StatisticLine text="good" value={good} />
-      <StatisticLine text="neutral" value={neutral} />
-      <StatisticLine text="bad" value={bad} />
-      <StatisticLine text="all" value={all} />
-      <StatisticLine text="average" value={average()} />
-      <StatisticLine text="positive" value={positive()} />
+      <table>
+        <tbody>
+          <StatisticLine text="good" value={good} />
+          <StatisticLine text="neutral" value={neutral} />
+          <StatisticLine text="bad" value={bad} />
+          <StatisticLine text="all" value={all} />
+          <StatisticLine text="average" value={average()} />
+          <StatisticLine text="positive" value={positive()} />
+        </tbody>
+      </table>
     </div>
   );
 };
