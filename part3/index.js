@@ -1,7 +1,8 @@
 const express = require("express")
 const morgan = require("morgan")
+const cors = require("cors")
 const app = express()
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 
 // 3.8 DONE
 let persons = [
@@ -26,15 +27,9 @@ let persons = [
     number: "39-23-6423122",
   },
 ]
-
-const unknownEndpoint = (request, response) => {
-  response.status(404).send({
-    error: "Unknown endpoint",
-  })
-}
-
 app.use(express.json())
-
+app.use(cors())
+app.use(express.static("dist"))
 morgan.token("content", (request, response) => {
   return JSON.stringify(request.body)
 })
@@ -43,6 +38,12 @@ app.use(
     ":method :url :status :res[content-length] - :response-time ms :content",
   ),
 )
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({
+    error: "Unknown endpoint",
+  })
+}
 
 //QF for a browser log
 app.get("/favicon.ico", (request, response) => response.status(204).end())
@@ -81,6 +82,33 @@ const generateId = () => {
     persons.length > 0 ? Math.max(...persons.map((p) => Number(p.id))) : 0
   return String(maxId + 1)
 }
+
+app.put("/api/persons/:id", (request, response) => {
+  const body = request.body
+  const id = request.params.id
+
+  if (!body.name || !body.number) {
+    return response.status(400).json({
+      error: "Name or number is missing",
+    })
+  }
+
+  const person = persons.find((p) => p.id === id)
+  if (!person) {
+    return response.status(404).json({
+      error: "Person not found",
+    })
+  }
+
+  const updatedPerson = {
+    ...person,
+    name: body.name,
+    number: body.number,
+  }
+  persons = persons.map((p) => (p.id === id ? updatedPerson : p))
+
+  response.json(updatedPerson)
+})
 
 app.post("/api/persons/", (request, response) => {
   const body = request.body
