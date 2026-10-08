@@ -1,23 +1,21 @@
 const Header = ({ name }) => {
-  return <h1>{name}</h1>;
-};
+  return <h1>{name}</h1>
+}
 const Content = ({ parts }) => {
   return (
     <>
       {parts.map((data, index) => (
         <p key={index}>
           {data.name}
-          {data.exercise}
+          {data.exercises}
         </p>
       ))}
     </>
-  );
-};
-const Total = ({parts}) => {
-  const total = parts.reduce((sum, part) => sum + part.exercises, 0)
-  return (
-    <p>Number of exercises {total}</p>
   )
+}
+const Total = ({ parts }) => {
+  const total = parts.reduce((sum, part) => sum + part.exercises, 0)
+  return <p>Number of exercises {total}</p>
 }
 const App = () => {
   const course = {
@@ -36,7 +34,7 @@ const App = () => {
         exercises: 14,
       },
     ],
-  };
+  }
 
   return (
     <div>
@@ -44,7 +42,7 @@ const App = () => {
       <Content parts={course.parts} />
       <Total parts={course.parts} />
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App
