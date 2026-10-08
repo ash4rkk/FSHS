@@ -55,15 +55,21 @@ test('blogs post created successfully', async () => {
   const newBlog = {
     title: 'Sample Title',
     author: 'Sample Author',
+    url: 'http://example.com/sample',
     likes: 5,
   }
 
-  await api
+  const response = await api
     .post('/api/blogs')
     .set('Authorization', `Bearer ${token}`)
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
+
+  assert.strictEqual(response.body.title, newBlog.title)
+  assert.strictEqual(response.body.author, newBlog.author)
+  assert.strictEqual(response.body.url, newBlog.url)
+  assert.strictEqual(response.body.likes, newBlog.likes)
 
   const blogsAtEnd = await helper.blogsInDb()
   assert.strictEqual(blogsAtEnd.length, helper.initialBlog.length + 1)
@@ -86,6 +92,7 @@ test('blogs if likes count is missing then likes = 0', async () => {
   const newBlog = {
     title: 'Sample Title',
     author: 'Sample Author',
+    url: 'http://example.com/sample',
   }
   const response = await api
     .post('/api/blogs')
@@ -100,6 +107,7 @@ test('blogs if likes count is missing then likes = 0', async () => {
 test('blogs without title is not added', async () => {
   const newBlog = {
     author: 'Sample Author',
+    url: 'http://example.com/sample',
     likes: 3,
   }
 
@@ -116,6 +124,24 @@ test('blogs without title is not added', async () => {
 test('blogs without author is not added', async () => {
   const newBlog = {
     title: 'Sample Title',
+    url: 'http://example.com/sample',
+    likes: 3,
+  }
+
+  await api
+    .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
+    .send(newBlog)
+    .expect(400)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  assert.strictEqual(blogsAtEnd.length, helper.initialBlog.length)
+})
+
+test('blogs without url is not added', async () => {
+  const newBlog = {
+    title: 'Sample Title',
+    author: 'Sample Author',
     likes: 3,
   }
 

@@ -5,13 +5,13 @@ const initialBlog = [
   {
     title: 'Sample Blog Title',
     author: 'Sample Blog Author',
-    url: '',
+    url: 'http://example.com/sample-1',
     likes: '420',
   },
   {
     title: 'Sample Blog Title 2',
     author: 'Sample Blog Author 2',
-    url: '',
+    url: 'http://example.com/sample-2',
     likes: '420',
   },
 ]
