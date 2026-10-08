@@ -3,6 +3,7 @@ const Person = require('./models/person')
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+const { unknownEndpoint, errorHandler } = require('./utils/middleware')
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -11,7 +12,7 @@ app.use(express.json())
 app.use(cors())
 app.use(express.static('dist'))
 
-morgan.token('content', (request, response) => {
+morgan.token('content', (request) => {
   return JSON.stringify(request.body)
 })
 
@@ -20,12 +21,6 @@ app.use(
     ':method :url :status :res[content-length] - :response-time ms :content',
   ),
 )
-
-const unknownEndpoint = (request, response) => {
-  response.status(404).send({
-    error: 'Unknown endpoint',
-  })
-}
 
 //QF for a browser log
 app.get('/favicon.ico', (request, response) => response.status(204).end())
@@ -60,7 +55,7 @@ app.get('/info', (request, response) => {
   Person.find({}).then((persons) => {
     const date = new Date()
     response.send(`
-    <h2>Phonebook has info for ${persons.length} people</h3>
+    <h2>Phonebook has info for ${persons.length} people</h2>
     <h2>${date}</h2>
 `)
   })
@@ -97,29 +92,28 @@ app.post('/api/persons/', (request, response, next) => {
     })
   }
 
-  const person = new Person({
-    name: body.name,
-    number: body.number,
-  })
+  Person.findOne({ name: body.name })
+    .then((existingPerson) => {
+      if (existingPerson) {
+        return response.status(400).json({
+          error: 'name must be unique',
+        })
+      }
 
-  person
-    .save()
-    .then((savedPerson) => {
-      response.json(savedPerson)
+      const person = new Person({
+        name: body.name,
+        number: body.number,
+      })
+
+      person
+        .save()
+        .then((savedPerson) => {
+          response.json(savedPerson)
+        })
+        .catch((error) => next(error))
     })
     .catch((error) => next(error))
 })
-
-const errorHandler = (error, request, response, next) => {
-  console.error(error.message)
-
-  if (error.name === 'CastError') {
-    return response.status(400).send({ error: 'malformatted id' })
-  } else if (error.name === 'ValidationError') {
-    return response.status(400).json({ error: error.message })
-  }
-  next(error)
-}
 
 app.use(errorHandler)
 app.use(unknownEndpoint)
