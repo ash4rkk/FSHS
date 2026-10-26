@@ -1,13 +1,13 @@
 const Header = ({ name }) => {
   return <h1>{name}</h1>
 }
+
 const Content = ({ parts }) => {
   return (
     <>
       {parts.map((data, index) => (
         <p key={index}>
-          {data.name}
-          {data.exercises}
+          {data.name} {data.exercises}
         </p>
       ))}
     </>
@@ -17,6 +17,7 @@ const Total = ({ parts }) => {
   const total = parts.reduce((sum, part) => sum + part.exercises, 0)
   return <p>Number of exercises {total}</p>
 }
+
 const App = () => {
   const course = {
     name: 'Half Stack application development',

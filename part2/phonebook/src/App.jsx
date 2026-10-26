@@ -55,11 +55,20 @@ const App = () => {
             notification(`Changed number for ${returnedPerson.name}`)
           })
           .catch((error) => {
-            notification(
-              `Information of ${nameExists.name} has already been removed from server`,
-              "error",
-            )
-            setPersons(persons.filter((person) => person.id !== nameExists.id))
+            if (error.response?.status === 404) {
+              notification(
+                `Information of ${nameExists.name} has already been removed from server`,
+                "error",
+              )
+              setPersons(
+                persons.filter((person) => person.id !== nameExists.id),
+              )
+            } else {
+              notification(
+                error.response?.data?.error || "Something went wrong",
+                "error",
+              )
+            }
           })
       }
     } else {
@@ -98,7 +107,7 @@ const App = () => {
           setPersons(persons.filter((p) => p.id !== id))
           notification(`Deleted ${deletedPerson.name}`)
         })
-        .catch((error) => {
+        .catch(() => {
           notification(
             `Information of ${deletedPerson.name} has already been removed form server.`,
             "error",

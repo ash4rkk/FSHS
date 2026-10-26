@@ -1,7 +1,7 @@
 // Make a test for the new blog form. The test should check, that the form calls the event handler it received as props with the right details when a new blog is created.
 
 import userEvent from '@testing-library/user-event'
-import { expect, vi } from 'vitest'
+import { test, expect, vi } from 'vitest'
 import BlogForm from './BlogForm'
 import { render, screen } from '@testing-library/react'
 

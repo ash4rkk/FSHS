@@ -24,7 +24,7 @@ const Statistict = ({ good, neutral, bad }) => {
     const pos = ((good / all) * 100).toFixed(2) + " %";
     return pos;
   };
-  if (all === 0) return <p>No feedback!</p>;
+  if (all === 0) return <p>No feedback given</p>;
   return (
     <div>
       <h1>Statistics</h1>

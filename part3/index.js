@@ -76,8 +76,15 @@ app.put('/api/persons/:id', (request, response, next) => {
     number: body.number,
   }
 
-  Person.findByIdAndUpdate(id, updatedPerson, { new: true })
+  Person.findByIdAndUpdate(id, updatedPerson, {
+    returnDocument: 'after',
+    runValidators: true,
+    context: 'query',
+  })
     .then((result) => {
+      if (!result) {
+        return response.status(404).end()
+      }
       response.json(result)
     })
     .catch((error) => next(error))
@@ -115,8 +122,8 @@ app.post('/api/persons/', (request, response, next) => {
     .catch((error) => next(error))
 })
 
-app.use(errorHandler)
 app.use(unknownEndpoint)
+app.use(errorHandler)
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`)

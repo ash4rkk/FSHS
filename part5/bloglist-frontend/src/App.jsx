@@ -16,7 +16,11 @@ const App = () => {
   const [loginVisible, setLoginVisible] = useState(null)
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs))
+    const fetchBlogs = async () => {
+      const blogs = await blogService.getAll()
+      setBlogs(blogs)
+    }
+    fetchBlogs()
   }, [])
 
   useEffect(() => {
@@ -56,6 +60,7 @@ const App = () => {
   const handleLogOut = () => {
     window.localStorage.removeItem('loggedBlogappUser')
     setUser(null)
+    setLoginVisible(false)
   }
 
   const addBlog = async (blogObject) => {
@@ -78,7 +83,11 @@ const App = () => {
 
   const likeBlog = async (id) => {
     const blog = blogs.find((b) => b.id === id)
-    const updatedBlog = { ...blog, likes: blog.likes + 1 }
+    const updatedBlog = {
+      ...blog,
+      likes: blog.likes + 1,
+      user: blog.user?.id,
+    }
 
     try {
       const returnedBlog = await blogService.update(id, updatedBlog)
@@ -149,7 +158,7 @@ const App = () => {
 
   const blogForm = () => {
     return (
-      <Togglable ref={blogFormRef} buttonLabel="show">
+      <Togglable ref={blogFormRef} buttonLabel="create new blog">
         <BlogForm createBlog={addBlog} />
       </Togglable>
     )
@@ -167,7 +176,7 @@ const App = () => {
           <h2>blogs</h2>
           {userLogged()}
           {blogForm()}
-          {blogs
+          {[...blogs]
             .sort((a, b) => b.likes - a.likes)
             .map((blog) => (
               <Blog

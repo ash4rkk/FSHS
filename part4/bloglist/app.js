@@ -9,7 +9,7 @@ const loginRouter = require('./controllers/login')
 
 const app = express()
 
-logger.info(`Connecting to ${config.MONGODB_URL}`)
+logger.info('Connecting to MongoDB')
 
 mongoose
   .connect(config.MONGODB_URL, { family: 4 })
@@ -27,6 +27,11 @@ app.use(middleware.tokenExtractor)
 app.use('/api/login', loginRouter)
 app.use('/api/users', userRouter)
 app.use('/api/blogs', blogsRouter)
+if (process.env.NODE_ENV === 'test') {
+  const testingRouter = require('./controllers/testing')
+  app.use('/api/testing', testingRouter)
+}
+
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
 
